@@ -26,6 +26,8 @@ namespace Esperecyan.NCVVCasVideoRequestList
             typeof(AssemblyProductAttribute)
         )).Product;
 
+        private Window window;
+
         public void AutoRun()
         {
             throw new NotImplementedException();
@@ -33,7 +35,16 @@ namespace Esperecyan.NCVVCasVideoRequestList
 
         public void Run()
         {
-            throw new NotImplementedException();
+            if (this.window != null && !this.window.IsDisposed)
+            {
+                this.window.Focus();
+                return;
+            }
+            this.window = new Window()
+            {
+                Text = this.Name + " " + this.Version,
+            };
+            this.window.Show();
         }
     }
 }
