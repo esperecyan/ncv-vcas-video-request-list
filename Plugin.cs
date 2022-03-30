@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -60,8 +61,19 @@ namespace Esperecyan.NCVVCasVideoRequestList
                 switch (dataGridView.Columns[e.ColumnIndex].Name)
                 {
                     case "Copy":
-                        Clipboard.SetText((string)dataGridView.Rows[e.RowIndex].Cells.Cast<DataGridViewCell>()
-                            .First(cell => cell.OwningColumn.Name == "URL").Value);
+                        var row = dataGridView.Rows[e.RowIndex];
+                        var cells = row.Cells.Cast<DataGridViewCell>();
+                        Clipboard.SetText((string)cells.First(cell => cell.OwningColumn.Name == "URL").Value);
+                        row.DefaultCellStyle.ForeColor = Color.Gray;
+                        foreach (var cell in cells)
+                        {
+                            if (cell is DataGridViewLinkCell linkCell)
+                            {
+                                linkCell.LinkColor = row.DefaultCellStyle.ForeColor;
+                                continue;
+                            }
+                        }
+                        row.DefaultCellStyle.BackColor = Color.LightGray;
                         break;
                 }
             };
