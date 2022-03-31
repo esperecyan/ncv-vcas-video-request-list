@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("NCV　VirtualCast動画リクエスト一覧プラグイン")]
-[assembly: AssemblyCopyright("MPL-2.0 © 2022 100の人")]
+[assembly: AssemblyCopyright("© 2022 100の人")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
