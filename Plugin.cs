@@ -14,7 +14,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
     {
         private static readonly Regex SupportedURLPattern = new Regex(@"https?://(
             (www\.nicovideo\.jp/watch/|nico\.ms/)[a-z]{2}[0-9]+
-            |(www\.youtube\.com/watch\?v=|youtu\.be/)[0-9A-Za-z]+
+            |(www\.youtube\.com/watch\?v=|youtu\.be/)[-_0-9A-Za-z]+
         )", RegexOptions.IgnorePatternWhitespace);
 
         public IPluginHost Host { get; set; }
