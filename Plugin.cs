@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -60,6 +61,13 @@ namespace Esperecyan.NCVVCasVideoRequestList
             {
                 switch (dataGridView.Columns[e.ColumnIndex].Name)
                 {
+                    case "URL":
+                        Process.Start(new ProcessStartInfo()
+                        {
+                            UseShellExecute = true,
+                            FileName = (string)dataGridView[e.ColumnIndex, e.RowIndex].Value,
+                        });
+                        break;
                     case "Copy":
                         var row = dataGridView.Rows[e.RowIndex];
                         var cells = row.Cells.Cast<DataGridViewCell>();
