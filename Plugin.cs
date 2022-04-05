@@ -79,7 +79,6 @@ namespace Esperecyan.NCVVCasVideoRequestList
                             if (cell is DataGridViewLinkCell linkCell)
                             {
                                 linkCell.LinkColor = row.DefaultCellStyle.ForeColor;
-                                continue;
                             }
                         }
                         row.DefaultCellStyle.BackColor = Color.LightGray;
