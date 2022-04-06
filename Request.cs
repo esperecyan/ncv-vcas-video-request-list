@@ -10,18 +10,36 @@ namespace Esperecyan.NCVVCasVideoRequestList
     internal class Request
     {
         private static readonly Regex SupportedURLPattern = new Regex(@"https?://(
-            (www\.nicovideo\.jp/watch/|nico\.ms/)[a-z]{2}[0-9]+
-            |(www\.youtube\.com/watch\?v=|youtu\.be/)[-_0-9A-Za-z]+
+            (www\.nicovideo\.jp/watch/|nico\.ms/)(?<niconico>[a-z]{2}[0-9]+)
+            |(www\.youtube\.com/watch\?v=|youtu\.be/)(?<youtube>[-_0-9A-Za-z]+)
         )", RegexOptions.IgnorePatternWhitespace);
 
         public string CommentNumber => this.commentData.No;
         public string UserNameOrId => this.userData.NickName ?? this.commentData.UserId;
-        public string URL { get; private set; }
+        public string URL
+        {
+            get
+            {
+                var prefix = "";
+                switch (this.videoStreamingService)
+                {
+                    case VideoStreamingServices.Niconico:
+                        prefix = "https://nico.ms/";
+                        break;
+                    case VideoStreamingServices.YouTube:
+                        prefix = "https://youtu.be/";
+                        break;
+                }
+                return prefix + this.videoId;
+            }
+        }
 
         internal Color? CommentBackgroundColor => this.userData.BGColor;
 
         private LiveCommentData commentData;
         private UserSettingInPlugin.UserData userData;
+        private VideoStreamingServices videoStreamingService;
+        private string videoId;
 
         /// <summary>
         /// コメントからリクエストを作成します。
@@ -43,12 +61,25 @@ namespace Esperecyan.NCVVCasVideoRequestList
             return Request.SupportedURLPattern.Matches(commentData.Comment).Cast<Match>().Select(match =>
             {
                 var userData = userDataList.FirstOrDefault(data => data.UserId == commentData.UserId);
+                var videoStreamingService = default(VideoStreamingServices);
+                var videoId = "";
+                if (match.Groups["niconico"].Value != "")
+                {
+                    videoStreamingService = VideoStreamingServices.Niconico;
+                    videoId = match.Groups["niconico"].Value;
+                }
+                else if (match.Groups["youtube"].Value != "")
+                {
+                    videoStreamingService = VideoStreamingServices.YouTube;
+                    videoId = match.Groups["youtube"].Value;
+                }
 
                 return new Request()
                 {
                     commentData = commentData,
                     userData = userData,
-                    URL = match.Value,
+                    videoStreamingService = videoStreamingService,
+                    videoId = videoId,
                 };
             });
         }
