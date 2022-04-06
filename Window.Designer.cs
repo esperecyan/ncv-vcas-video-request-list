@@ -28,18 +28,22 @@ namespace Esperecyan.NCVVCasVideoRequestList
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.DataGridView = new System.Windows.Forms.DataGridView();
+            this.requestBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.Number = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UserId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.URL = new System.Windows.Forms.DataGridViewLinkColumn();
             this.Copy = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.requestBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // DataGridView
             // 
             this.DataGridView.AllowUserToAddRows = false;
             this.DataGridView.AllowUserToDeleteRows = false;
+            this.DataGridView.AutoGenerateColumns = false;
             this.DataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.DataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -47,6 +51,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.UserId,
             this.URL,
             this.Copy});
+            this.DataGridView.DataSource = this.requestBindingSource;
             this.DataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.DataGridView.Location = new System.Drawing.Point(0, 0);
             this.DataGridView.Name = "DataGridView";
@@ -55,8 +60,13 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.DataGridView.Size = new System.Drawing.Size(800, 450);
             this.DataGridView.TabIndex = 0;
             // 
+            // requestBindingSource
+            // 
+            this.requestBindingSource.DataSource = typeof(Esperecyan.NCVVCasVideoRequestList.Request);
+            // 
             // Number
             // 
+            this.Number.DataPropertyName = "CommentNumber";
             this.Number.HeaderText = "コメ番";
             this.Number.Name = "Number";
             this.Number.ReadOnly = true;
@@ -64,6 +74,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
             // 
             // UserId
             // 
+            this.UserId.DataPropertyName = "UserNameOrId";
             this.UserId.HeaderText = "ユーザーID";
             this.UserId.Name = "UserId";
             this.UserId.ReadOnly = true;
@@ -71,6 +82,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
             // 
             // URL
             // 
+            this.URL.DataPropertyName = "URL";
             this.URL.HeaderText = "URL";
             this.URL.Name = "URL";
             this.URL.ReadOnly = true;
@@ -81,6 +93,8 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.Copy.HeaderText = "コピー";
             this.Copy.Name = "Copy";
             this.Copy.ReadOnly = true;
+            this.Copy.Text = "クリップボードへコピー";
+            this.Copy.UseColumnTextForButtonValue = true;
             this.Copy.Width = 38;
             // 
             // Window
@@ -92,12 +106,14 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.Name = "Window";
             this.Text = "Window";
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.requestBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
         internal System.Windows.Forms.DataGridView DataGridView;
+        private System.Windows.Forms.BindingSource requestBindingSource;
         private System.Windows.Forms.DataGridViewTextBoxColumn Number;
         private System.Windows.Forms.DataGridViewTextBoxColumn UserId;
         private System.Windows.Forms.DataGridViewLinkColumn URL;

@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Plugin;
 
@@ -12,11 +10,6 @@ namespace Esperecyan.NCVVCasVideoRequestList
 {
     public class Plugin : IPlugin
     {
-        private static readonly Regex SupportedURLPattern = new Regex(@"https?://(
-            (www\.nicovideo\.jp/watch/|nico\.ms/)[a-z]{2}[0-9]+
-            |(www\.youtube\.com/watch\?v=|youtu\.be/)[-_0-9A-Za-z]+
-        )", RegexOptions.IgnorePatternWhitespace);
-
         public IPluginHost Host { get; set; }
 
         public bool IsAutoRun => false;
@@ -60,21 +53,21 @@ namespace Esperecyan.NCVVCasVideoRequestList
             var dataGridView = this.window.DataGridView;
             dataGridView.CellContentClick += (object sender, DataGridViewCellEventArgs e) =>
             {
+                var url = this.window.Requests[e.RowIndex].URL;
                 switch (dataGridView.Columns[e.ColumnIndex].Name)
                 {
                     case "URL":
                         Process.Start(new ProcessStartInfo()
                         {
                             UseShellExecute = true,
-                            FileName = (string)dataGridView[e.ColumnIndex, e.RowIndex].Value,
+                            FileName = url,
                         });
                         break;
                     case "Copy":
+                        Clipboard.SetText(url);
                         var row = dataGridView.Rows[e.RowIndex];
-                        var cells = row.Cells.Cast<DataGridViewCell>();
-                        Clipboard.SetText((string)cells.First(cell => cell.OwningColumn.Name == "URL").Value);
                         row.DefaultCellStyle.ForeColor = Color.Gray;
-                        foreach (var cell in cells)
+                        foreach (var cell in row.Cells)
                         {
                             if (cell is DataGridViewLinkCell linkCell)
                             {
@@ -89,30 +82,11 @@ namespace Esperecyan.NCVVCasVideoRequestList
 
         private void Host_ReceivedComment(object sender, ReceivedCommentEventArgs e)
         {
-
-            var rows = this.window.DataGridView.Rows;
             foreach (var commentData in e.CommentDataList)
             {
-                if (commentData.IsNGUser || commentData.IsNGComment
-                    || commentData.IsOfficialNGUser || commentData.IsOfficialNGWord)
+                foreach (var request in Request.Create(commentData, this.userDataList))
                 {
-                    continue;
-                }
-
-                foreach (var match in Plugin.SupportedURLPattern.Matches(commentData.Comment).Cast<Match>())
-                {
-                    var userData = this.userDataList.FirstOrDefault(data => data.UserId == commentData.UserId);
-
-                    var index = rows.Add(new string[] {
-                        commentData.No,
-                        userData?.NickName ?? commentData.UserId,
-                        match.Value,
-                        "クリップボードへコピー",
-                    });
-                    if (userData != null)
-                    {
-                        rows[index].DefaultCellStyle.BackColor = userData.BGColor;
-                    }
+                    this.window.Requests.Add(request);
                 }
             }
         }
