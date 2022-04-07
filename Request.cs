@@ -1,19 +1,31 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Xml;
+using HtmlAgilityPack;
 using Plugin;
 using NicoLibrary.NicoLiveData;
 
 namespace Esperecyan.NCVVCasVideoRequestList
 {
-    internal class Request
+    internal class Request : INotifyPropertyChanged
     {
         private static readonly Regex SupportedURLPattern = new Regex(@"https?://(
             (www\.nicovideo\.jp/watch/|nico\.ms/)(?<niconico>(sm|nm|so)[0-9]{1,11}) # 2022年現在の動画IDは8桁
             |(www\.youtube\.com/watch\?v=|youtu\.be/)(?<youtube>[-_0-9A-Za-z]{11})
         )", RegexOptions.IgnorePatternWhitespace);
+        private static readonly TimeSpan MinimumInterval = TimeSpan.FromSeconds(10);
 
+        private static IDictionary<VideoStreamingServices, DateTimeOffset> VideoStreamingServiceNextFetchingTimePairs
+            = new Dictionary<VideoStreamingServices, DateTimeOffset>();
+        private static HttpClient HttpClient;
+
+        public event PropertyChangedEventHandler PropertyChanged;
         public string CommentNumber => this.commentData.No;
         public string UserNameOrId => this.userData.NickName ?? this.commentData.UserId;
         public string URL
@@ -33,6 +45,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
                 return prefix + this.videoId;
             }
         }
+        public string Title { get; private set; }
 
         internal Color? CommentBackgroundColor => this.userData.BGColor;
 
@@ -74,14 +87,109 @@ namespace Esperecyan.NCVVCasVideoRequestList
                     videoId = match.Groups["youtube"].Value;
                 }
 
-                return new Request()
+                var request = new Request()
                 {
                     commentData = commentData,
                     userData = userData,
                     videoStreamingService = videoStreamingService,
                     videoId = videoId,
                 };
+                request.FetchVideoInformation();
+                return request;
             });
+        }
+
+        /// <summary>
+        /// 同一のサービスへの要求のあいだに、一定の時間を空けるようにします。
+        /// </summary>
+        /// <param name="videoStreamingService"></param>
+        /// <returns></returns>
+        private static async Task WaitRequest(VideoStreamingServices videoStreamingService)
+        {
+            var sleepTimeSpan = TimeSpan.Zero;
+            if (Request.VideoStreamingServiceNextFetchingTimePairs.ContainsKey(videoStreamingService)
+                && Request.VideoStreamingServiceNextFetchingTimePairs[videoStreamingService] > DateTimeOffset.Now)
+            {
+                sleepTimeSpan
+                    = Request.VideoStreamingServiceNextFetchingTimePairs[videoStreamingService] - DateTimeOffset.Now;
+            }
+
+            Request.VideoStreamingServiceNextFetchingTimePairs[videoStreamingService]
+                = DateTimeOffset.Now + sleepTimeSpan + Request.MinimumInterval;
+            if (sleepTimeSpan > TimeSpan.Zero)
+            {
+                await Task.Delay(sleepTimeSpan);
+            }
+        }
+
+        /// <summary>
+        /// 指定したURLから文字列データを取得します。
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns>HTTPステータスエラーの場合は <c>null</c> を返します。</returns>
+        private async Task<string> Fetch(Uri url)
+        {
+            if (Request.HttpClient == null)
+            {
+                Request.HttpClient = new HttpClient();
+            }
+
+            var response = await Request.HttpClient.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        private async void FetchVideoInformation()
+        {
+            await Request.WaitRequest(this.videoStreamingService);
+
+            switch (this.videoStreamingService)
+            {
+                case VideoStreamingServices.Niconico:
+                    var niconicoContent = await this.Fetch(
+                        new Uri("https://ext.nicovideo.jp/api/getthumbinfo/" + this.videoId)
+                    );
+                    if (niconicoContent == null)
+                    {
+                        break;
+                    }
+
+                    var niconicoDoc = new XmlDocument();
+                    niconicoDoc.LoadXml(niconicoContent);
+                    if (niconicoDoc.DocumentElement.GetAttribute("status") != "ok")
+                    {
+                        break;
+                    }
+
+                    this.Title = niconicoDoc.GetElementsByTagName("title")[0].InnerText;
+                    break;
+
+                case VideoStreamingServices.YouTube:
+                    var youtubeContent = await this.Fetch(
+                        new Uri("https://www.youtube.com/watch?v=" + this.videoId)
+                    );
+                    if (youtubeContent == null)
+                    {
+                        break;
+                    }
+
+                    var youtubeDoc = new HtmlDocument();
+                    youtubeDoc.LoadHtml(youtubeContent);
+                    var titleMetaNode = youtubeDoc.DocumentNode.SelectSingleNode("//meta[@name='twitter:title']");
+                    if (titleMetaNode == null)
+                    {
+                        break;
+                    }
+
+                    this.Title = titleMetaNode.GetAttributeValue("content", def: null);
+                    break;
+            }
+
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Title)));
         }
     }
 }

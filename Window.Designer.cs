@@ -35,6 +35,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.UserId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.URL = new System.Windows.Forms.DataGridViewLinkColumn();
             this.Copy = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.requestBindingSource)).BeginInit();
             this.SuspendLayout();
@@ -50,7 +51,8 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.Number,
             this.UserId,
             this.URL,
-            this.Copy});
+            this.Copy,
+            this.Title});
             this.DataGridView.DataSource = this.requestBindingSource;
             this.DataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.DataGridView.Location = new System.Drawing.Point(0, 0);
@@ -97,6 +99,14 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.Copy.UseColumnTextForButtonValue = true;
             this.Copy.Width = 38;
             // 
+            // Title
+            // 
+            this.Title.DataPropertyName = "Title";
+            this.Title.HeaderText = "タイトル";
+            this.Title.Name = "Title";
+            this.Title.ReadOnly = true;
+            this.Title.Width = 65;
+            // 
             // Window
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -118,5 +128,6 @@ namespace Esperecyan.NCVVCasVideoRequestList
         private System.Windows.Forms.DataGridViewTextBoxColumn UserId;
         private System.Windows.Forms.DataGridViewLinkColumn URL;
         private System.Windows.Forms.DataGridViewButtonColumn Copy;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Title;
     }
 }
