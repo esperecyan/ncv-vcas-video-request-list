@@ -46,6 +46,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
             }
         }
         public string Title { get; private set; }
+        public string VirtualCastSupport { get; private set; } = "待機中";
 
         internal Color? CommentBackgroundColor => this.userData.BGColor;
 
@@ -137,6 +138,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
             var response = await Request.HttpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
+                this.VirtualCastSupport = response.StatusCode.ToString();
                 return null;
             }
 
@@ -162,10 +164,25 @@ namespace Esperecyan.NCVVCasVideoRequestList
                     niconicoDoc.LoadXml(niconicoContent);
                     if (niconicoDoc.DocumentElement.GetAttribute("status") != "ok")
                     {
+                        this.VirtualCastSupport = "404";
                         break;
                     }
 
                     this.Title = niconicoDoc.GetElementsByTagName("title")[0].InnerText;
+                    switch (this.videoId.Substring(startIndex: 0, length: 2))
+                    {
+                        case "sm":
+                            this.VirtualCastSupport = niconicoDoc.GetElementsByTagName("embeddable")[0].InnerText == "1"
+                                ? "○"
+                                : "埋込不可";
+                            break;
+                        case "nm":
+                            this.VirtualCastSupport = "NMM";
+                            break;
+                        case "so":
+                            this.VirtualCastSupport = "公式ch";
+                            break;
+                    }
                     break;
 
                 case VideoStreamingServices.YouTube:
@@ -182,14 +199,22 @@ namespace Esperecyan.NCVVCasVideoRequestList
                     var titleMetaNode = youtubeDoc.DocumentNode.SelectSingleNode("//meta[@name='twitter:title']");
                     if (titleMetaNode == null)
                     {
+                        this.VirtualCastSupport = "404";
                         break;
                     }
 
                     this.Title = titleMetaNode.GetAttributeValue("content", def: null);
+                    this.VirtualCastSupport
+                        = youtubeDoc.DocumentNode.SelectSingleNode("//meta[@name='twitter:player']") != null
+                            ? "○"
+                            : "埋込不可";
                     break;
             }
 
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Title)));
+            foreach (var propertyName in new[] { nameof(this.Title), nameof(this.VirtualCastSupport) })
+            {
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

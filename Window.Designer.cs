@@ -34,6 +34,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.Number = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UserId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.URL = new System.Windows.Forms.DataGridViewLinkColumn();
+            this.VirtualCastSupport = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Copy = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView)).BeginInit();
@@ -51,6 +52,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.Number,
             this.UserId,
             this.URL,
+            this.VirtualCastSupport,
             this.Copy,
             this.Title});
             this.DataGridView.DataSource = this.requestBindingSource;
@@ -90,6 +92,14 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.URL.ReadOnly = true;
             this.URL.Width = 33;
             // 
+            // VirtualCastSupport
+            // 
+            this.VirtualCastSupport.DataPropertyName = "VirtualCastSupport";
+            this.VirtualCastSupport.HeaderText = "読込可能";
+            this.VirtualCastSupport.Name = "VirtualCastSupport";
+            this.VirtualCastSupport.ReadOnly = true;
+            this.VirtualCastSupport.Width = 78;
+            // 
             // Copy
             // 
             this.Copy.HeaderText = "コピー";
@@ -127,6 +137,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
         private System.Windows.Forms.DataGridViewTextBoxColumn Number;
         private System.Windows.Forms.DataGridViewTextBoxColumn UserId;
         private System.Windows.Forms.DataGridViewLinkColumn URL;
+        private System.Windows.Forms.DataGridViewTextBoxColumn VirtualCastSupport;
         private System.Windows.Forms.DataGridViewButtonColumn Copy;
         private System.Windows.Forms.DataGridViewTextBoxColumn Title;
     }

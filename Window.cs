@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Esperecyan.NCVVCasVideoRequestList
@@ -25,6 +26,30 @@ namespace Esperecyan.NCVVCasVideoRequestList
                     return;
                 }
                 this.DataGridView.Rows[index].DefaultCellStyle.BackColor = color.Value;
+            };
+            this.Requests.ListChanged += (sender, e) =>
+            {
+                if (e.ListChangedType != ListChangedType.ItemChanged)
+                {
+                    return;
+                }
+
+                var color = default(Color);
+                switch (this.Requests[e.NewIndex].VirtualCastSupport)
+                {
+                    case "待機中":
+                        return;
+
+                    case "○":
+                        color = Color.LimeGreen;
+                        break;
+
+                    default:
+                        color = Color.Crimson;
+                        break;
+                }
+                this.DataGridView[this.DataGridView.Columns["VirtualCastSupport"].Index, e.NewIndex].Style.ForeColor
+                    = color;
             };
         }
     }
