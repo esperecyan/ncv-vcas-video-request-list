@@ -47,7 +47,17 @@ namespace Esperecyan.NCVVCasVideoRequestList
             };
             this.window.Show();
             this.userDataList = this.Host.GetUserSettingInPlugin().UserDataList;
-            this.Host_ReceivedComment(sender: null, new ReceivedCommentEventArgs(this.Host.GetAcquiredComment()));
+            try
+            {
+                this.Host_ReceivedComment(sender: null, new ReceivedCommentEventArgs(this.Host.GetAcquiredComment()));
+            }
+            catch (ApplicationException exception)
+            {
+                if (exception.Message != "コメントデータがありません。")
+                {
+                    throw;
+                }
+            }
             this.Host.ReceivedComment += this.Host_ReceivedComment;
             this.window.FormClosing += (sender, args) => this.Host.ReceivedComment -= this.Host_ReceivedComment;
             var dataGridView = this.window.DataGridView;
