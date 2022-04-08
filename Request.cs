@@ -27,7 +27,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
 
         public event PropertyChangedEventHandler PropertyChanged;
         public string CommentNumber => this.commentData.No;
-        public string UserNameOrId => this.userData.NickName ?? this.commentData.UserId;
+        public string UserNameOrId => this.userData?.NickName ?? this.commentData.UserId;
         public string URL
         {
             get
@@ -48,7 +48,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
         public string Title { get; private set; }
         public string VirtualCastSupport { get; private set; } = "待機中";
 
-        internal Color? CommentBackgroundColor => this.userData.BGColor;
+        internal Color? CommentBackgroundColor => this.userData?.BGColor;
 
         private LiveCommentData commentData;
         private UserSettingInPlugin.UserData userData;
