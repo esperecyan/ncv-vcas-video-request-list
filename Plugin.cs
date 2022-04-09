@@ -59,7 +59,14 @@ namespace Esperecyan.NCVVCasVideoRequestList
                 }
             }
             this.Host.ReceivedComment += this.Host_ReceivedComment;
-            this.window.FormClosing += (sender, args) => this.Host.ReceivedComment -= this.Host_ReceivedComment;
+            this.window.FormClosing += (sender, args) =>
+            {
+                this.Host.ReceivedComment -= this.Host_ReceivedComment;
+                foreach (var request in this.window.Requests)
+                {
+                    request.Dispose();
+                }
+            };
             var dataGridView = this.window.DataGridView;
             dataGridView.CellContentClick += (object sender, DataGridViewCellEventArgs e) =>
             {

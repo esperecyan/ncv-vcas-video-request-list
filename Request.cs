@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using HtmlAgilityPack;
@@ -13,7 +14,7 @@ using NicoLibrary.NicoLiveData;
 
 namespace Esperecyan.NCVVCasVideoRequestList
 {
-    internal class Request : INotifyPropertyChanged
+    internal class Request : IDisposable, INotifyPropertyChanged
     {
         private static readonly Regex SupportedURLPattern = new Regex(@"https?://(
             (www\.nicovideo\.jp/watch/|nico\.ms/)(?<niconico>(sm|nm|so)[0-9]{1,11}) # 2022年現在の動画IDは8桁
@@ -50,10 +51,16 @@ namespace Esperecyan.NCVVCasVideoRequestList
 
         internal Color? CommentBackgroundColor => this.userData?.BGColor;
 
+        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private LiveCommentData commentData;
         private UserSettingInPlugin.UserData userData;
         private VideoStreamingServices videoStreamingService;
         private string videoId;
+
+        public void Dispose()
+        {
+            this.cancellationTokenSource.Cancel();
+        }
 
         /// <summary>
         /// コメントからリクエストを作成します。
@@ -104,8 +111,12 @@ namespace Esperecyan.NCVVCasVideoRequestList
         /// 同一のサービスへの要求のあいだに、一定の時間を空けるようにします。
         /// </summary>
         /// <param name="videoStreamingService"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private static async Task WaitRequest(VideoStreamingServices videoStreamingService)
+        private static async Task WaitRequest(
+            VideoStreamingServices videoStreamingService,
+            CancellationToken cancellationToken
+        )
         {
             var sleepTimeSpan = TimeSpan.Zero;
             if (Request.VideoStreamingServiceNextFetchingTimePairs.ContainsKey(videoStreamingService)
@@ -119,7 +130,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
                 = DateTimeOffset.Now + sleepTimeSpan + Request.MinimumInterval;
             if (sleepTimeSpan > TimeSpan.Zero)
             {
-                await Task.Delay(sleepTimeSpan);
+                await Task.Delay(sleepTimeSpan, cancellationToken);
             }
         }
 
@@ -135,7 +146,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
                 Request.HttpClient = new HttpClient();
             }
 
-            var response = await Request.HttpClient.GetAsync(url);
+            var response = await Request.HttpClient.GetAsync(url, this.cancellationTokenSource.Token);
             if (!response.IsSuccessStatusCode)
             {
                 this.VirtualCastSupport = response.StatusCode.ToString();
@@ -147,74 +158,79 @@ namespace Esperecyan.NCVVCasVideoRequestList
 
         private async void FetchVideoInformation()
         {
-            await Request.WaitRequest(this.videoStreamingService);
-
-            switch (this.videoStreamingService)
+            try
             {
-                case VideoStreamingServices.Niconico:
-                    var niconicoContent = await this.Fetch(
-                        new Uri("https://ext.nicovideo.jp/api/getthumbinfo/" + this.videoId)
-                    );
-                    if (niconicoContent == null)
-                    {
-                        break;
-                    }
+                await Request.WaitRequest(this.videoStreamingService, this.cancellationTokenSource.Token);
 
-                    var niconicoDoc = new XmlDocument();
-                    niconicoDoc.LoadXml(niconicoContent);
-                    if (niconicoDoc.DocumentElement.GetAttribute("status") != "ok")
-                    {
-                        this.VirtualCastSupport = "404";
-                        break;
-                    }
+                switch (this.videoStreamingService)
+                {
+                    case VideoStreamingServices.Niconico:
+                        var niconicoContent = await this.Fetch(
+                            new Uri("https://ext.nicovideo.jp/api/getthumbinfo/" + this.videoId)
+                        );
+                        if (niconicoContent == null)
+                        {
+                            break;
+                        }
 
-                    this.Title = niconicoDoc.GetElementsByTagName("title")[0].InnerText;
-                    switch (this.videoId.Substring(startIndex: 0, length: 2))
-                    {
-                        case "sm":
-                            this.VirtualCastSupport = niconicoDoc.GetElementsByTagName("embeddable")[0].InnerText == "1"
+                        var niconicoDoc = new XmlDocument();
+                        niconicoDoc.LoadXml(niconicoContent);
+                        if (niconicoDoc.DocumentElement.GetAttribute("status") != "ok")
+                        {
+                            this.VirtualCastSupport = "404";
+                            break;
+                        }
+
+                        this.Title = niconicoDoc.GetElementsByTagName("title")[0].InnerText;
+                        switch (this.videoId.Substring(startIndex: 0, length: 2))
+                        {
+                            case "sm":
+                                this.VirtualCastSupport
+                                    = niconicoDoc.GetElementsByTagName("embeddable")[0].InnerText == "1"
+                                        ? "○"
+                                        : "埋込不可";
+                                break;
+                            case "nm":
+                                this.VirtualCastSupport = "NMM";
+                                break;
+                            case "so":
+                                this.VirtualCastSupport = "公式ch";
+                                break;
+                        }
+                        break;
+
+                    case VideoStreamingServices.YouTube:
+                        var youtubeContent = await this.Fetch(
+                            new Uri("https://www.youtube.com/watch?v=" + this.videoId)
+                        );
+                        if (youtubeContent == null)
+                        {
+                            break;
+                        }
+
+                        var youtubeDoc = new HtmlDocument();
+                        youtubeDoc.LoadHtml(youtubeContent);
+                        var titleMetaNode = youtubeDoc.DocumentNode.SelectSingleNode("//meta[@name='twitter:title']");
+                        if (titleMetaNode == null)
+                        {
+                            this.VirtualCastSupport = "404";
+                            break;
+                        }
+
+                        this.Title = titleMetaNode.GetAttributeValue("content", def: null);
+                        this.VirtualCastSupport
+                            = youtubeDoc.DocumentNode.SelectSingleNode("//meta[@name='twitter:player']") != null
                                 ? "○"
                                 : "埋込不可";
-                            break;
-                        case "nm":
-                            this.VirtualCastSupport = "NMM";
-                            break;
-                        case "so":
-                            this.VirtualCastSupport = "公式ch";
-                            break;
-                    }
-                    break;
-
-                case VideoStreamingServices.YouTube:
-                    var youtubeContent = await this.Fetch(
-                        new Uri("https://www.youtube.com/watch?v=" + this.videoId)
-                    );
-                    if (youtubeContent == null)
-                    {
                         break;
-                    }
+                }
 
-                    var youtubeDoc = new HtmlDocument();
-                    youtubeDoc.LoadHtml(youtubeContent);
-                    var titleMetaNode = youtubeDoc.DocumentNode.SelectSingleNode("//meta[@name='twitter:title']");
-                    if (titleMetaNode == null)
-                    {
-                        this.VirtualCastSupport = "404";
-                        break;
-                    }
-
-                    this.Title = titleMetaNode.GetAttributeValue("content", def: null);
-                    this.VirtualCastSupport
-                        = youtubeDoc.DocumentNode.SelectSingleNode("//meta[@name='twitter:player']") != null
-                            ? "○"
-                            : "埋込不可";
-                    break;
+                foreach (var propertyName in new[] { nameof(this.Title), nameof(this.VirtualCastSupport) })
+                {
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+                }
             }
-
-            foreach (var propertyName in new[] { nameof(this.Title), nameof(this.VirtualCastSupport) })
-            {
-                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
+            catch (TaskCanceledException) { }
         }
     }
 }
