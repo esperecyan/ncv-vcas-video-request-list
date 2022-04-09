@@ -16,10 +16,10 @@ namespace Esperecyan.NCVVCasVideoRequestList
 {
     internal class Request : IDisposable, INotifyPropertyChanged
     {
-        private static readonly Regex SupportedURLPattern = new Regex(@"https?://(
-            (www\.nicovideo\.jp/watch/|nico\.ms/)(?<niconico>(sm|nm|so)[0-9]{1,11}) # 2022年現在の動画IDは8桁
-            |(www\.youtube\.com/watch\?v=|youtu\.be/)(?<youtube>[-_0-9A-Za-z]{11})
-        )", RegexOptions.IgnorePatternWhitespace);
+        private static readonly Regex SupportedURLPattern = new Regex(@"
+            (?<niconico>(sm|nm|so)[0-9]{1,11}) # 2022年現在の動画IDは8桁
+            |(https?://www\.youtube\.com/watch\?v=|youtu\.be/)(?<youtube>[-_0-9A-Za-z]{11})
+        ", RegexOptions.IgnorePatternWhitespace);
         private static readonly TimeSpan MinimumInterval = TimeSpan.FromSeconds(10);
 
         private static IDictionary<VideoStreamingServices, DateTimeOffset> VideoStreamingServiceNextFetchingTimePairs
