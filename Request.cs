@@ -22,8 +22,8 @@ namespace Esperecyan.NCVVCasVideoRequestList
         ", RegexOptions.IgnorePatternWhitespace);
         private static readonly TimeSpan MinimumInterval = TimeSpan.FromSeconds(10);
 
-        private static IDictionary<VideoStreamingServices, DateTimeOffset> VideoStreamingServiceNextFetchingTimePairs
-            = new Dictionary<VideoStreamingServices, DateTimeOffset>();
+        private static readonly IDictionary<VideoStreamingServices, DateTimeOffset>
+            VideoStreamingServiceNextFetchingTimePairs = new Dictionary<VideoStreamingServices, DateTimeOffset>();
         private static HttpClient HttpClient;
 
         public event PropertyChangedEventHandler PropertyChanged;
