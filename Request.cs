@@ -217,7 +217,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
                             break;
                         }
 
-                        this.Title = titleMetaNode.GetAttributeValue("content", def: null);
+                        this.Title = HtmlEntity.DeEntitize(titleMetaNode.GetAttributeValue("content", def: null));
                         this.VirtualCastSupport
                             = youtubeDoc.DocumentNode.SelectSingleNode("//meta[@name='twitter:player']") != null
                                 ? "○"
