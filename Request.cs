@@ -18,7 +18,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
     {
         private static readonly Regex SupportedURLPattern = new Regex(@"
             (?<niconico>(sm|nm|so)[0-9]{1,11}) # 2022年現在の動画IDは8桁
-            |(https?://www\.youtube\.com/watch\?v=|youtu\.be/)(?<youtube>[-_0-9A-Za-z]{11})
+            |(https?://www\.youtube\.com/watch\?[^#]*?v=|youtu\.be/)(?<youtube>[-_0-9A-Za-z]{11})
         ", RegexOptions.IgnorePatternWhitespace);
         private static readonly TimeSpan MinimumInterval = TimeSpan.FromSeconds(10);
 
