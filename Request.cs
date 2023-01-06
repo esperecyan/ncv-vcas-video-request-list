@@ -48,8 +48,25 @@ namespace Esperecyan.NCVVCasVideoRequestList
         }
         public string Title { get; private set; }
         public string VirtualCastSupport { get; private set; } = "待機中";
+        public bool AlreadyPlayed { get; internal set; }
 
         internal Color? CommentBackgroundColor => this.userData?.BGColor;
+        internal string UserId => this.commentData.UserId;
+        internal string ServiceName
+        {
+            get
+            {
+                switch (this.videoStreamingService)
+                {
+                    case VideoStreamingServices.Niconico:
+                        return "ニコニコ";
+                    case VideoStreamingServices.YouTube:
+                        return "YouTube";
+                    default:
+                        return null;
+                }
+            }
+        }
 
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private LiveCommentData commentData;
