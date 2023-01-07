@@ -36,6 +36,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.URL = new System.Windows.Forms.DataGridViewLinkColumn();
             this.VirtualCastSupport = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Copy = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.AlreadyPlayed = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.requestBindingSource)).BeginInit();
@@ -54,15 +55,16 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.URL,
             this.VirtualCastSupport,
             this.Copy,
+            this.AlreadyPlayed,
             this.Title});
             this.DataGridView.DataSource = this.requestBindingSource;
             this.DataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.DataGridView.Location = new System.Drawing.Point(0, 0);
             this.DataGridView.Name = "DataGridView";
-            this.DataGridView.ReadOnly = true;
             this.DataGridView.RowTemplate.Height = 21;
             this.DataGridView.Size = new System.Drawing.Size(800, 450);
             this.DataGridView.TabIndex = 0;
+            this.DataGridView.CurrentCellDirtyStateChanged += new System.EventHandler(this.DataGridView_CurrentCellDirtyStateChanged);
             // 
             // requestBindingSource
             // 
@@ -109,6 +111,13 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.Copy.UseColumnTextForButtonValue = true;
             this.Copy.Width = 38;
             // 
+            // AlreadyPlayed
+            // 
+            this.AlreadyPlayed.DataPropertyName = "AlreadyPlayed";
+            this.AlreadyPlayed.HeaderText = "済";
+            this.AlreadyPlayed.Name = "AlreadyPlayed";
+            this.AlreadyPlayed.Width = 23;
+            // 
             // Title
             // 
             this.Title.DataPropertyName = "Title";
@@ -139,6 +148,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
         private System.Windows.Forms.DataGridViewLinkColumn URL;
         private System.Windows.Forms.DataGridViewTextBoxColumn VirtualCastSupport;
         private System.Windows.Forms.DataGridViewButtonColumn Copy;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn AlreadyPlayed;
         private System.Windows.Forms.DataGridViewTextBoxColumn Title;
     }
 }

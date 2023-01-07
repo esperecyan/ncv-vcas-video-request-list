@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -113,17 +112,6 @@ namespace Esperecyan.NCVVCasVideoRequestList
                     case "Copy":
                         Clipboard.SetText(url);
                         request.AlreadyPlayed = true;
-                        this.PushToVCI();
-                        var row = dataGridView.Rows[e.RowIndex];
-                        row.DefaultCellStyle.ForeColor = Color.Gray;
-                        foreach (var cell in row.Cells)
-                        {
-                            if (cell is DataGridViewLinkCell linkCell)
-                            {
-                                linkCell.LinkColor = row.DefaultCellStyle.ForeColor;
-                            }
-                        }
-                        row.DefaultCellStyle.BackColor = Color.LightGray;
                         break;
                 }
             };

@@ -10,6 +10,8 @@ namespace Esperecyan.NCVVCasVideoRequestList
     {
         internal BindingList<Request> Requests = new BindingList<Request>();
 
+        private Color defaultLinkColor;
+
         public Window()
         {
             this.InitializeComponent();
@@ -62,6 +64,22 @@ namespace Esperecyan.NCVVCasVideoRequestList
                 }
                 this.DataGridView[this.DataGridView.Columns["VirtualCastSupport"].Index, e.NewIndex].Style.ForeColor
                     = color;
+
+                var row = this.DataGridView.Rows[e.NewIndex];
+                var alreadyPlayed = this.Requests[e.NewIndex].AlreadyPlayed;
+                row.DefaultCellStyle.ForeColor = alreadyPlayed ? Color.Gray : default;
+                foreach (var cell in row.Cells)
+                {
+                    if (cell is DataGridViewLinkCell linkCell)
+                    {
+                        if (this.defaultLinkColor == default)
+                        {
+                            this.defaultLinkColor = linkCell.LinkColor;
+                        }
+                        linkCell.LinkColor = alreadyPlayed ? row.DefaultCellStyle.ForeColor : this.defaultLinkColor;
+                    }
+                }
+                row.DefaultCellStyle.BackColor = alreadyPlayed ? Color.LightGray : default;
             };
         }
 
@@ -72,6 +90,16 @@ namespace Esperecyan.NCVVCasVideoRequestList
             Settings.Default.WindowWidth = this.Width;
             Settings.Default.WindowHeight = this.Height;
             Settings.Default.Save();
+        }
+
+        private void DataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            // チェックを切り替えた時点で強制的に確定させる
+            // 【C#】DataGridViewでセルを変更した瞬間にイベントを発生させる【Form】 | Hiyo Code <https://hiyo-code.com/dvg-cellchange/>
+            if (this.DataGridView.IsCurrentCellDirty)
+            {
+                this.DataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
         }
     }
 }
