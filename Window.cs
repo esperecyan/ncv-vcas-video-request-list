@@ -1,6 +1,8 @@
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using Esperecyan.NCVVCasVideoRequestList.Properties;
 
 namespace Esperecyan.NCVVCasVideoRequestList
 {
@@ -11,6 +13,16 @@ namespace Esperecyan.NCVVCasVideoRequestList
         public Window()
         {
             this.InitializeComponent();
+
+            if (Settings.Default.WindowLeft != default)
+            {
+                this.StartPosition = FormStartPosition.Manual;
+                this.Left = Settings.Default.WindowLeft;
+                this.Top = Settings.Default.WindowTop;
+                this.Width = Settings.Default.WindowWidth;
+                this.Height = Settings.Default.WindowHeight;
+            }
+
             this.DataGridView.DataSource = this.Requests;
             this.DataGridView.DataBindingComplete += (sender, e) =>
             {
@@ -51,6 +63,15 @@ namespace Esperecyan.NCVVCasVideoRequestList
                 this.DataGridView[this.DataGridView.Columns["VirtualCastSupport"].Index, e.NewIndex].Style.ForeColor
                     = color;
             };
+        }
+
+        protected override void OnResizeEnd(EventArgs e)
+        {
+            Settings.Default.WindowLeft = this.Left;
+            Settings.Default.WindowTop = this.Top;
+            Settings.Default.WindowWidth = this.Width;
+            Settings.Default.WindowHeight = this.Height;
+            Settings.Default.Save();
         }
     }
 }
