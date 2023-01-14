@@ -93,4 +93,9 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>IF $(ConfigurationName) == Release (
+     pwsh -ExecutionPolicy RemoteSigned -File "$(SolutionDir)archive-built-files.ps1" -TargetDir $(TargetDir)
+)</PostBuildEvent>
+  </PropertyGroup>
 </Project>
