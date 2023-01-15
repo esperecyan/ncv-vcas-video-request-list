@@ -11,6 +11,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
         internal BindingList<Request> Requests = new BindingList<Request>();
 
         private Color defaultLinkColor;
+        private Color defaultVisitedLinkColor;
 
         public Window()
         {
@@ -80,6 +81,13 @@ namespace Esperecyan.NCVVCasVideoRequestList
                             this.defaultLinkColor = linkCell.LinkColor;
                         }
                         linkCell.LinkColor = alreadyPlayed ? row.DefaultCellStyle.ForeColor : this.defaultLinkColor;
+                        if (this.defaultVisitedLinkColor == default)
+                        {
+                            this.defaultVisitedLinkColor = linkCell.VisitedLinkColor;
+                        }
+                        linkCell.VisitedLinkColor = alreadyPlayed
+                            ? row.DefaultCellStyle.ForeColor
+                            : this.defaultVisitedLinkColor;
                     }
                 }
                 row.DefaultCellStyle.BackColor = alreadyPlayed ? Color.LightGray : default;
