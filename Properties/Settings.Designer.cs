@@ -70,5 +70,29 @@ namespace Esperecyan.NCVVCasVideoRequestList.Properties {
                 this["WindowHeight"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PushingNameToVCI {
+            get {
+                return ((bool)(this["PushingNameToVCI"]));
+            }
+            set {
+                this["PushingNameToVCI"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool NotPushingAnonymousCommentToVCI {
+            get {
+                return ((bool)(this["NotPushingAnonymousCommentToVCI"]));
+            }
+            set {
+                this["NotPushingAnonymousCommentToVCI"] = value;
+            }
+        }
     }
 }

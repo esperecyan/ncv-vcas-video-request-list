@@ -56,6 +56,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
         } }
 
         internal Color? CommentBackgroundColor => this.userData?.BGColor;
+        internal bool IsAnonymity => this.commentData.IsAnonymity;
         internal string UserId => this.commentData.UserId;
         internal string ServiceName
         {

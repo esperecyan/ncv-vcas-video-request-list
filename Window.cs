@@ -25,6 +25,9 @@ namespace Esperecyan.NCVVCasVideoRequestList
                 this.Height = Settings.Default.WindowHeight;
             }
 
+            this.pushingNameToVCICheckBox.Checked = Settings.Default.PushingNameToVCI;
+            this.notPushingAnonymousCommentToVCICheckBox.Checked = Settings.Default.NotPushingAnonymousCommentToVCI;
+
             this.DataGridView.DataSource = this.Requests;
             this.DataGridView.DataBindingComplete += (sender, e) =>
             {
@@ -100,6 +103,18 @@ namespace Esperecyan.NCVVCasVideoRequestList
             {
                 this.DataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
             }
+        }
+
+        private void PushingNameToVCICheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.PushingNameToVCI = ((CheckBox)sender).Checked;
+            Settings.Default.Save();
+        }
+
+        private void NotPushingAnonymousCommentToVCICheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.NotPushingAnonymousCommentToVCI = ((CheckBox)sender).Checked;
+            Settings.Default.Save();
         }
     }
 }

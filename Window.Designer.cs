@@ -30,7 +30,6 @@ namespace Esperecyan.NCVVCasVideoRequestList
         {
             this.components = new System.ComponentModel.Container();
             this.DataGridView = new System.Windows.Forms.DataGridView();
-            this.requestBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.Number = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UserId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.URL = new System.Windows.Forms.DataGridViewLinkColumn();
@@ -38,6 +37,11 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.Copy = new System.Windows.Forms.DataGridViewButtonColumn();
             this.AlreadyPlayed = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.requestBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.label1 = new System.Windows.Forms.Label();
+            this.pushingNameToVCICheckBox = new System.Windows.Forms.CheckBox();
+            this.notPushingAnonymousCommentToVCICheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.requestBindingSource)).BeginInit();
             this.SuspendLayout();
@@ -59,16 +63,12 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.Title});
             this.DataGridView.DataSource = this.requestBindingSource;
             this.DataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.DataGridView.Location = new System.Drawing.Point(0, 0);
+            this.DataGridView.Location = new System.Drawing.Point(0, 24);
             this.DataGridView.Name = "DataGridView";
             this.DataGridView.RowTemplate.Height = 21;
-            this.DataGridView.Size = new System.Drawing.Size(800, 450);
+            this.DataGridView.Size = new System.Drawing.Size(800, 426);
             this.DataGridView.TabIndex = 0;
             this.DataGridView.CurrentCellDirtyStateChanged += new System.EventHandler(this.DataGridView_CurrentCellDirtyStateChanged);
-            // 
-            // requestBindingSource
-            // 
-            this.requestBindingSource.DataSource = typeof(Esperecyan.NCVVCasVideoRequestList.Request);
             // 
             // Number
             // 
@@ -126,17 +126,67 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.Title.ReadOnly = true;
             this.Title.Width = 65;
             // 
+            // requestBindingSource
+            // 
+            this.requestBindingSource.DataSource = typeof(Esperecyan.NCVVCasVideoRequestList.Request);
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
+            this.menuStrip1.TabIndex = 1;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label1.Location = new System.Drawing.Point(10, 6);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(106, 12);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "VCIへのデータ送信";
+            // 
+            // pushingNameToVCICheckBox
+            // 
+            this.pushingNameToVCICheckBox.AutoSize = true;
+            this.pushingNameToVCICheckBox.Location = new System.Drawing.Point(131, 5);
+            this.pushingNameToVCICheckBox.Name = "pushingNameToVCICheckBox";
+            this.pushingNameToVCICheckBox.Size = new System.Drawing.Size(160, 16);
+            this.pushingNameToVCICheckBox.TabIndex = 3;
+            this.pushingNameToVCICheckBox.Text = "IDの代わりに名前を送信する";
+            this.pushingNameToVCICheckBox.UseVisualStyleBackColor = true;
+            this.pushingNameToVCICheckBox.CheckedChanged += new System.EventHandler(this.PushingNameToVCICheckBox_CheckedChanged);
+            // 
+            // notPushingAnonymousCommentToVCICheckBox
+            // 
+            this.notPushingAnonymousCommentToVCICheckBox.AutoSize = true;
+            this.notPushingAnonymousCommentToVCICheckBox.Location = new System.Drawing.Point(307, 5);
+            this.notPushingAnonymousCommentToVCICheckBox.Name = "notPushingAnonymousCommentToVCICheckBox";
+            this.notPushingAnonymousCommentToVCICheckBox.Size = new System.Drawing.Size(104, 16);
+            this.notPushingAnonymousCommentToVCICheckBox.TabIndex = 4;
+            this.notPushingAnonymousCommentToVCICheckBox.Text = "184を送信しない";
+            this.notPushingAnonymousCommentToVCICheckBox.UseVisualStyleBackColor = true;
+            this.notPushingAnonymousCommentToVCICheckBox.CheckedChanged += new System.EventHandler(this.NotPushingAnonymousCommentToVCICheckBox_CheckedChanged);
+            // 
             // Window
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.notPushingAnonymousCommentToVCICheckBox);
+            this.Controls.Add(this.pushingNameToVCICheckBox);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.DataGridView);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Window";
             this.Text = "Window";
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.requestBindingSource)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -150,5 +200,9 @@ namespace Esperecyan.NCVVCasVideoRequestList
         private System.Windows.Forms.DataGridViewButtonColumn Copy;
         private System.Windows.Forms.DataGridViewCheckBoxColumn AlreadyPlayed;
         private System.Windows.Forms.DataGridViewTextBoxColumn Title;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox pushingNameToVCICheckBox;
+        private System.Windows.Forms.CheckBox notPushingAnonymousCommentToVCICheckBox;
     }
 }

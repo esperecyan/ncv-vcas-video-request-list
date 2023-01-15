@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Esperecyan.NCVVCasVideoRequestList.Properties;
 using Plugin;
 
 namespace Esperecyan.NCVVCasVideoRequestList
@@ -71,6 +73,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.userDataList = this.Host.GetUserSettingInPlugin().UserDataList;
             Application.ApplicationExit += this.Application_ApplicationExit;
             this.window.Requests.ListChanged += this.Requests_ListChanged;
+            Settings.Default.SettingChanging += this.SettingsDefault_SettingChanging;
             try
             {
                 this.Host_ReceivedComment(sender: null, new ReceivedCommentEventArgs(this.Host.GetAcquiredComment()));
@@ -133,6 +136,19 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.PushToVCI();
         }
 
+        private void SettingsDefault_SettingChanging(object sender, SettingChangingEventArgs e)
+        {
+            if (!new[] {
+                nameof(Settings.Default.PushingNameToVCI),
+                nameof(Settings.Default.NotPushingAnonymousCommentToVCI),
+            }.Contains(e.SettingName))
+            {
+                return;
+            }
+
+            this.PushToVCI();
+        }
+
         private void Application_ApplicationExit(object sender, EventArgs e)
         {
             this.ClearVCI();
@@ -141,10 +157,14 @@ namespace Esperecyan.NCVVCasVideoRequestList
         private void PushToVCI()
         {
             File.WriteAllText(this.vciLuaFilePath, "return {\n"
-                + string.Join("\n", this.window.Requests.Select(request =>
-                {
-                    return $@"   {{
-        userId = {this.EscapeToLuaStringLiteral(request.UserId)},
+                + string.Join("\n", this.window.Requests
+                    .Where(request => !Settings.Default.NotPushingAnonymousCommentToVCI || !request.IsAnonymity)
+                    .Select(request =>
+                    {
+                        return $@"   {{
+        userId = {this.EscapeToLuaStringLiteral(Settings.Default.PushingNameToVCI
+                    ? request.UserNameOrId
+                    : request.UserId)},
         status = {this.EscapeToLuaStringLiteral(
                     request.VirtualCastSupport != "○" ? request.VirtualCastSupport : request.ServiceName
                 )},
@@ -152,8 +172,8 @@ namespace Esperecyan.NCVVCasVideoRequestList
         title = {(request.Title != null ? this.EscapeToLuaStringLiteral(request.Title) : "nil")},
         alreadyPlayed = {(request.AlreadyPlayed ? "true" : "false")},
     }},";
-                }))
-                + "\n}");
+                    }))
+                    + "\n}");
         }
 
         private void ClearVCI()
