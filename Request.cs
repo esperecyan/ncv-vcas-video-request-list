@@ -49,11 +49,27 @@ namespace Esperecyan.NCVVCasVideoRequestList
         public string Title { get; private set; }
         public string VirtualCastSupport { get; private set; } = "待機中";
         private bool alreadyPlayed;
-        public bool AlreadyPlayed { get => this.alreadyPlayed; set
+        public bool AlreadyPlayed
         {
-            this.alreadyPlayed = value;
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.AlreadyPlayed)));
-        } }
+            get => this.alreadyPlayed; set
+            {
+                this.alreadyPlayed = value;
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.AlreadyPlayed)));
+            }
+        }
+        private bool used;
+        public bool Used
+        {
+            get => this.used; set
+            {
+                this.used = value;
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Used)));
+                if (this.used)
+                {
+                    this.AlreadyPlayed = true;
+                }
+            }
+        }
 
         internal Color? CommentBackgroundColor => this.userData?.BGColor;
         internal bool IsAnonymity => this.commentData.IsAnonymity;

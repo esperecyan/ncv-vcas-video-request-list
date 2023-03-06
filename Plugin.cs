@@ -115,6 +115,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
                     case "Copy":
                         Clipboard.SetText(url);
                         request.AlreadyPlayed = true;
+                        request.Used = true;
                         break;
                 }
             };

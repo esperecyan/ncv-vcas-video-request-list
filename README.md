@@ -26,6 +26,8 @@ VirtualCastで [動画リクエスト一覧] を取得してスタジオに表�
 		* Plugin.dll
 		* NicoLibrary.dll
 		* plugins ← 出力先
+			- Csv.dll
+			- Csv - LICENSE
 			- HtmlAgilityPack.dll
 			- HtmlAgilityPack - LICENSE
 			- NCVVCasVideoRequestList.dll
@@ -43,5 +45,9 @@ VirtualCastで [動画リクエスト一覧] を取得してスタジオに表�
 	+ MIT License (MIT)
 	+ Copyright © ZZZ Projects Inc.
 	+ https://github.com/zzzprojects/html-agility-pack/blob/v1.11.42/LICENSE
+- Csv
+	+ MIT License (MIT)
+	+ Copyright (c) 2015 Steve Hansen
+	+ https://github.com/stevehansen/csv/blob/67758eb3b4849f9dc7a101ef8bc15ae19e7a8502/LICENSE
 
 [Mozilla Public License Version 2.0]: https://www.mozilla.org/MPL/2.0/

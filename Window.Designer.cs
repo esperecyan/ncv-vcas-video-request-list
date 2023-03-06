@@ -36,12 +36,15 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.VirtualCastSupport = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Copy = new System.Windows.Forms.DataGridViewButtonColumn();
             this.AlreadyPlayed = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Used = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.requestBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.label1 = new System.Windows.Forms.Label();
             this.pushingNameToVCICheckBox = new System.Windows.Forms.CheckBox();
             this.notPushingAnonymousCommentToVCICheckBox = new System.Windows.Forms.CheckBox();
+            this.ListCopyButton = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.requestBindingSource)).BeginInit();
             this.SuspendLayout();
@@ -60,6 +63,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.VirtualCastSupport,
             this.Copy,
             this.AlreadyPlayed,
+            this.Used,
             this.Title});
             this.DataGridView.DataSource = this.requestBindingSource;
             this.DataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -118,6 +122,14 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.AlreadyPlayed.Name = "AlreadyPlayed";
             this.AlreadyPlayed.Width = 23;
             // 
+            // Used
+            // 
+            this.Used.DataPropertyName = "Used";
+            this.Used.HeaderText = "流した";
+            this.Used.Name = "Used";
+            this.Used.ToolTipText = "実際に流したか否か。楽曲利用申請等が必要かあとから確認するためのものです。この列へチェックを入れると、「済」列へも自動でチェックが入ります。";
+            this.Used.Width = 41;
+            // 
             // Title
             // 
             this.Title.DataPropertyName = "Title";
@@ -170,11 +182,25 @@ namespace Esperecyan.NCVVCasVideoRequestList
             this.notPushingAnonymousCommentToVCICheckBox.UseVisualStyleBackColor = true;
             this.notPushingAnonymousCommentToVCICheckBox.CheckedChanged += new System.EventHandler(this.NotPushingAnonymousCommentToVCICheckBox_CheckedChanged);
             // 
+            // ListCopyButton
+            // 
+            this.ListCopyButton.Location = new System.Drawing.Point(479, 1);
+            this.ListCopyButton.Name = "ListCopyButton";
+            this.ListCopyButton.Size = new System.Drawing.Size(160, 23);
+            this.ListCopyButton.TabIndex = 5;
+            this.ListCopyButton.Text = "一覧をクリップボードへコピー";
+            this.toolTip1.SetToolTip(this.ListCopyButton, "読み込み可能な動画、かつ「済」へチェックが入っているリクエストを、TSV形式でクリップボードへコピーします。\r\n\r\n「タイトル」「ユーザーID」「URL」「流した" +
+        "」列の内容がこの順番でコピーされます。\r\n「流した」列は、チェックが入っていれば「True」、入っていなければ「False」になります。\r\nなお、TSVのヘッダ" +
+        "行は含まれません。");
+            this.ListCopyButton.UseVisualStyleBackColor = true;
+            this.ListCopyButton.Click += new System.EventHandler(this.ListCopyButton_Click);
+            // 
             // Window
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.ListCopyButton);
             this.Controls.Add(this.notPushingAnonymousCommentToVCICheckBox);
             this.Controls.Add(this.pushingNameToVCICheckBox);
             this.Controls.Add(this.label1);
@@ -193,16 +219,19 @@ namespace Esperecyan.NCVVCasVideoRequestList
         #endregion
         internal System.Windows.Forms.DataGridView DataGridView;
         private System.Windows.Forms.BindingSource requestBindingSource;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox pushingNameToVCICheckBox;
+        private System.Windows.Forms.CheckBox notPushingAnonymousCommentToVCICheckBox;
+        private System.Windows.Forms.Button ListCopyButton;
         private System.Windows.Forms.DataGridViewTextBoxColumn Number;
         private System.Windows.Forms.DataGridViewTextBoxColumn UserId;
         private System.Windows.Forms.DataGridViewLinkColumn URL;
         private System.Windows.Forms.DataGridViewTextBoxColumn VirtualCastSupport;
         private System.Windows.Forms.DataGridViewButtonColumn Copy;
         private System.Windows.Forms.DataGridViewCheckBoxColumn AlreadyPlayed;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Used;
         private System.Windows.Forms.DataGridViewTextBoxColumn Title;
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.CheckBox pushingNameToVCICheckBox;
-        private System.Windows.Forms.CheckBox notPushingAnonymousCommentToVCICheckBox;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

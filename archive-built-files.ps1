@@ -11,6 +11,8 @@
 param([string]$TargetDir)
 
 $OUTPUT_FILE_NAMES = @(
+	'Csv - LICENSE',
+	'Csv.dll',
 	'HtmlAgilityPack - LICENSE',
 	'HtmlAgilityPack.dll',
 	'NCVVCasVideoRequestList.dll',

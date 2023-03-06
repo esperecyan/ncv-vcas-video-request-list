@@ -1,7 +1,9 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
+using Csv;
 using Esperecyan.NCVVCasVideoRequestList.Properties;
 
 namespace Esperecyan.NCVVCasVideoRequestList
@@ -123,6 +125,32 @@ namespace Esperecyan.NCVVCasVideoRequestList
         {
             Settings.Default.NotPushingAnonymousCommentToVCI = ((CheckBox)sender).Checked;
             Settings.Default.Save();
+        }
+
+        private void ListCopyButton_Click(object sender, EventArgs e)
+        {
+            var requests = this.Requests.Where(request => request.VirtualCastSupport == "○" && request.AlreadyPlayed);
+            if (requests.Count() == 0)
+            {
+                MessageBox.Show(
+                    "読み込み可能な動画、かつ「済」へチェックが入っているリクエストが一つもありません。",
+                    caption: this.Text
+                );
+                return;
+            }
+
+            Clipboard.SetText(CsvWriter.WriteToText(
+                headers: new string[4],
+                requests.Select(request => new[]
+                {
+                    request.Title,
+                    request.UserNameOrId,
+                    request.URL,
+                    request.Used.ToString(),
+                }),
+                separator: '\t',
+                skipHeaderRow: true
+            ));
         }
     }
 }
