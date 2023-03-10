@@ -28,7 +28,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
 
         public event PropertyChangedEventHandler PropertyChanged;
         public string CommentNumber => this.commentData.No;
-        public string UserNameOrId => this.userData?.NickName ?? this.commentData.UserId;
+        public string NickNameOrId => this.userData?.NickName ?? this.commentData.UserId;
         public string URL
         {
             get
@@ -73,7 +73,9 @@ namespace Esperecyan.NCVVCasVideoRequestList
 
         internal Color? CommentBackgroundColor => this.userData?.BGColor;
         internal bool IsAnonymity => this.commentData.IsAnonymity;
-        internal string UserId => this.commentData.UserId;
+        internal string UserNameOrId => string.IsNullOrEmpty(this.commentData.Name)
+                ? this.commentData.UserId // 184か配信者
+                : this.commentData.Name;
         internal string ServiceName
         {
             get

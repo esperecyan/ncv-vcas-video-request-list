@@ -140,7 +140,6 @@ namespace Esperecyan.NCVVCasVideoRequestList
         private void SettingsDefault_SettingChanging(object sender, SettingChangingEventArgs e)
         {
             if (!new[] {
-                nameof(Settings.Default.PushingNameToVCI),
                 nameof(Settings.Default.NotPushingAnonymousCommentToVCI),
             }.Contains(e.SettingName))
             {
@@ -163,9 +162,7 @@ namespace Esperecyan.NCVVCasVideoRequestList
                     .Select(request =>
                     {
                         return $@"   {{
-        userId = {this.EscapeToLuaStringLiteral(Settings.Default.PushingNameToVCI
-                    ? request.UserNameOrId
-                    : request.UserId)},
+        userId = {this.EscapeToLuaStringLiteral(request.UserNameOrId)},
         status = {this.EscapeToLuaStringLiteral(
                     request.VirtualCastSupport != "○" ? request.VirtualCastSupport : request.ServiceName
                 )},
