@@ -121,6 +121,10 @@ namespace Esperecyan.NCVVCasVideoRequestList
             }
 
             var match = Request.SupportedURLPattern.Match(commentData.Comment);
+            if (!match.Success)
+            {
+                return null;
+            }
 
             var userData = userDataList.FirstOrDefault(data => data.UserId == commentData.UserId);
             var videoStreamingService = default(VideoStreamingServices);
