@@ -108,8 +108,8 @@ namespace Esperecyan.NCVVCasVideoRequestList
         /// </summary>
         /// <param name="commentData"></param>
         /// <param name="userDataList"></param>
-        /// <returns>存在しなければ空になります。</returns>
-        internal static IEnumerable<Request> Create(
+        /// <returns>存在しなければ <c>null</c> になります。</returns>
+        internal static Request Create(
             LiveCommentData commentData,
             IEnumerable<UserSettingInPlugin.UserData> userDataList
         )
@@ -117,35 +117,34 @@ namespace Esperecyan.NCVVCasVideoRequestList
             if (commentData.IsNGUser || commentData.IsNGComment
                 || commentData.IsOfficialNGUser || commentData.IsOfficialNGWord)
             {
-                return new List<Request>();
+                return null;
             }
 
-            return Request.SupportedURLPattern.Matches(commentData.Comment).Cast<Match>().Select(match =>
-            {
-                var userData = userDataList.FirstOrDefault(data => data.UserId == commentData.UserId);
-                var videoStreamingService = default(VideoStreamingServices);
-                var videoId = "";
-                if (match.Groups["niconico"].Value != "")
-                {
-                    videoStreamingService = VideoStreamingServices.Niconico;
-                    videoId = match.Groups["niconico"].Value;
-                }
-                else if (match.Groups["youtube"].Value != "")
-                {
-                    videoStreamingService = VideoStreamingServices.YouTube;
-                    videoId = match.Groups["youtube"].Value;
-                }
+            var match = Request.SupportedURLPattern.Match(commentData.Comment);
 
-                var request = new Request()
-                {
-                    commentData = commentData,
-                    userData = userData,
-                    videoStreamingService = videoStreamingService,
-                    videoId = videoId,
-                };
-                request.FetchVideoInformation();
-                return request;
-            });
+            var userData = userDataList.FirstOrDefault(data => data.UserId == commentData.UserId);
+            var videoStreamingService = default(VideoStreamingServices);
+            var videoId = "";
+            if (match.Groups["niconico"].Value != "")
+            {
+                videoStreamingService = VideoStreamingServices.Niconico;
+                videoId = match.Groups["niconico"].Value;
+            }
+            else if (match.Groups["youtube"].Value != "")
+            {
+                videoStreamingService = VideoStreamingServices.YouTube;
+                videoId = match.Groups["youtube"].Value;
+            }
+
+            var request = new Request()
+            {
+                commentData = commentData,
+                userData = userData,
+                videoStreamingService = videoStreamingService,
+                videoId = videoId,
+            };
+            request.FetchVideoInformation();
+            return request;
         }
 
         /// <summary>

@@ -125,10 +125,13 @@ namespace Esperecyan.NCVVCasVideoRequestList
         {
             foreach (var commentData in e.CommentDataList)
             {
-                foreach (var request in Request.Create(commentData, this.userDataList))
+                var request = Request.Create(commentData, this.userDataList);
+                if (request == null)
                 {
-                    this.window.Requests.Add(request);
+                    continue;
                 }
+
+                this.window.Requests.Add(request);
             }
         }
 
